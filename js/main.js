@@ -31,7 +31,6 @@ function agregarColorSimon() {
 }
 
 function mostrarSecuenciaSimon() {
-    desactivarListeners();
     for(let i = 0; i < secuenciaSimon.length; i++) {
         const colorActual = secuenciaSimon[i];
         const $botonActual = document.querySelector(`#${colorActual}`);
@@ -85,9 +84,9 @@ function evaluarColorUsuario(event) {
     const colorUsuario = event.target.id;
     if(colorUsuario === secuenciaSimon[cantMovimientosJugador]) {
         cantMovimientosJugador++;
-        setTimeout(evaluarEstadoJuego, 1000);
+        evaluarEstadoJuego();
     } else {
-        console.log("Perdiste HDP!");
+        console.log("perdiste");
         desactivarListeners();
         reiniciarSimon();
     }
@@ -95,9 +94,12 @@ function evaluarColorUsuario(event) {
 
 function evaluarEstadoJuego() {
     if(secuenciaSimon.length === cantMovimientosJugador) {
-        agregarColorSimon();
-        cantMovimientosJugador = 0;
-        console.log("Bieen!");
-        mostrarSecuenciaSimon();
+        desactivarListeners();
+        console.log("bien!");
+        setTimeout(function() {
+            cantMovimientosJugador = 0;
+            agregarColorSimon();
+            mostrarSecuenciaSimon();
+        }, 1000);
     }
 }
