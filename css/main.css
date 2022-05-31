@@ -40,3 +40,7 @@
 .prendido {
   filter: brightness(100%);
 }
+
+.oculto {
+  display: none;
+}
