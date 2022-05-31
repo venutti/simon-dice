@@ -2,9 +2,12 @@ let secuenciaSimon = [];
 let cantMovimientosJugador = 0;
 
 const $botonInformacion = document.querySelector("#boton-informacion");
+const $botonReiniciar = document.querySelector("#boton-reiniciar");
 const $botonComenzar = document.querySelector("#boton-comenzar");
 
 $botonComenzar.onclick = function(event) {
+    ocultarElemento($botonComenzar);
+    desocultarElemento($botonReiniciar);
     ejecutarSimonDice();
     event.preventDefault();
 }
