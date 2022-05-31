@@ -17,7 +17,6 @@ function obtenerElementoAleatorio(array) {
 function ejecutarSimonDice() {
     agregarColorSimon();
     mostrarSecuenciaSimon();
-    activarListeners();
 }
 
 function reiniciarSimon() {
@@ -32,13 +31,44 @@ function agregarColorSimon() {
 }
 
 function mostrarSecuenciaSimon() {
-    console.log(secuenciaSimon);
+    desactivarListeners();
+    for(let i = 0; i < secuenciaSimon.length; i++) {
+        const colorActual = secuenciaSimon[i];
+        const $botonActual = document.querySelector(`#${colorActual}`);
+        setTimeout(prenderBoton, i*1000, $botonActual);
+        setTimeout(apagarBoton, i*1000+500, $botonActual);
+        if (i === secuenciaSimon.length-1) {
+            setTimeout(activarListeners, i*1000+500);
+        }
+    }
+}
+
+function prenderBoton($boton) {
+    $boton.classList.remove("apagado");
+    $boton.classList.add("prendido");
+}
+
+function apagarBoton($boton) {
+    $boton.classList.remove("prendido");
+    $boton.classList.add("apagado");
+}
+
+function evaluarEventoPrenderBoton(event) {
+    const $botonActual = event.target;
+    prenderBoton($botonActual);
+}
+
+function evaluarEventoApagarBoton(event) {
+    const $botonActual = event.target;
+    apagarBoton($botonActual);
 }
 
 function activarListeners() {
     const $botones = document.querySelectorAll("#tablero-simon .color-simon");
     $botones.forEach(function($boton) {
         $boton.addEventListener("click", evaluarColorUsuario);
+        $boton.addEventListener("mousedown", evaluarEventoPrenderBoton);
+        $boton.addEventListener("mouseup", evaluarEventoApagarBoton);
     })
 }
 
@@ -46,6 +76,8 @@ function desactivarListeners() {
     const $botones = document.querySelectorAll("#tablero-simon .color-simon");
     $botones.forEach(function($boton) {
         $boton.removeEventListener("click", evaluarColorUsuario);
+        $boton.removeEventListener("mousedown", evaluarEventoPrenderBoton);
+        $boton.removeEventListener("mouseup", evaluarEventoApagarBoton);
     })
 }
 
@@ -53,7 +85,7 @@ function evaluarColorUsuario(event) {
     const colorUsuario = event.target.id;
     if(colorUsuario === secuenciaSimon[cantMovimientosJugador]) {
         cantMovimientosJugador++;
-        evaluarEstadoJuego();
+        setTimeout(evaluarEstadoJuego, 1000);
     } else {
         console.log("Perdiste HDP!");
         desactivarListeners();
