@@ -32,3 +32,11 @@
   grid-column: 2;
   background-color: green;
 }
+
+.apagado {
+  filter: brightness(50%);
+}
+
+.prendido {
+  filter: brightness(100%);
+}
