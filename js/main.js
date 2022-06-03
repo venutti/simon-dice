@@ -1,59 +1,68 @@
 let secuenciaSimon = [];
 let cantMovimientosJugador = 0;
-let temporizadoresEnMarcha = [];
+let ronda = 0;
 
-const $botonReiniciar = document.querySelector("#boton-reiniciar");
 const $botonComenzar = document.querySelector("#boton-comenzar");
 
-$botonComenzar.onclick = function(event) {
-    ocultarElemento($botonComenzar);
-    desocultarElemento($botonReiniciar);
-    ejecutarSimonDice();
-    event.preventDefault();
-}
+cambiarContadorRonda("--");
+desactivarListeners();
+cambiarMensajeEstado("Toca 'JUGAR' para empezar!");
 
-$botonReiniciar.onclick = function(event) {
-    desactivarListeners();
-    reiniciarTemporizadores();
+$botonComenzar.onclick = ejecutarSimon;
+
+function ejecutarSimon() {
     reiniciarSimon();
-    event.preventDefault();
+    manejarRonda();
 }
 
-function obtenerElementoAleatorio(array) {
-    const indiceAleatorio = Math.floor(Math.random() * array.length);
-    return array[indiceAleatorio];
-}
-
-function eliminarElemento(array, elemento) {
-    const indice = array.indexOf(elemento);
-    array.splice(indice, 1);
-}
-
-function ejecutarSimonDice() {
+function manejarRonda() {
+    //reset
+    cambiarMensajeEstado("Turno de la máquina");
+    desactivarListeners();
     agregarColorSimon();
-    mostrarSecuenciaSimon();
+    cantMovimientosJugador = 0;
+    ronda++;
+    cambiarContadorRonda(ronda);
+    
+    //display
+    const RETRASO_TURNO_JUGADOR = (secuenciaSimon.length + 1) * 1000;
+    secuenciaSimon.forEach(function(color, index) {
+        const $boton = document.querySelector(`#${color}`);
+        const RETRASO_DISPLAY_COLOR = (index + 1) * 1000;
+        setTimeout(function() {
+            parpadearBoton($boton);
+        }, RETRASO_DISPLAY_COLOR);
+    });
+    setTimeout(function() {
+        cambiarMensajeEstado("Tu turno!");
+        activarListeners();
+    }, RETRASO_TURNO_JUGADOR);
 }
+
+function evaluarColorUsuario(event) {
+    const colorUsuario = event.target.id;
+    if(colorUsuario !== secuenciaSimon[cantMovimientosJugador])  {
+        perder();
+        return;
+    }
+    cantMovimientosJugador++;
+    //Evaluar estado de secuencia
+    if(secuenciaSimon.length === cantMovimientosJugador) {
+        desactivarListeners();
+        setTimeout(manejarRonda, 500);
+    }
+}
+
+function perder() {
+    desactivarListeners();
+    cambiarMensajeEstado("Upps, perdiste! Toca 'JUGAR' para volver a intentarlo.");
+}
+
 
 function reiniciarSimon() {
-    desocultarElemento($botonComenzar);
-    ocultarElemento($botonReiniciar);
-    apagarBotones();
     secuenciaSimon = [];
     cantMovimientosJugador = 0;
-}
-
-function reiniciarTemporizadores() {
-    temporizadoresEnMarcha.forEach(function(temporizador) {
-        clearTimeout(temporizador);
-    });
-    temporizadoresEnMarcha = [];
-}
-
-function apagarBotones() {
-    const $botones = document.querySelectorAll("#tablero-simon .color-simon");
-    $botones.forEach(function($boton) {
-        apagarBoton($boton);
-    });
+    ronda = 0;
 }
 
 function agregarColorSimon() {
@@ -61,8 +70,8 @@ function agregarColorSimon() {
     const nuevoColor = obtenerElementoAleatorio(colores);
     secuenciaSimon.push(nuevoColor);
 }
-
-function mostrarSecuenciaSimon() {
+/*
+function mostrarSecuenciaSimon(index=0) {
     for(let i = 0; i < secuenciaSimon.length; i++) {
         const colorActual = secuenciaSimon[i];
         const $botonActual = document.querySelector(`#${colorActual}`);
@@ -75,21 +84,28 @@ function mostrarSecuenciaSimon() {
         temporizadoresEnMarcha.push(t2);
         setTimeout(function(){eliminarElemento(temporizadoresEnMarcha, t2)}, i*1000+500);
         if (i === secuenciaSimon.length-1) {
-            let t3 = setTimeout(activarListeners, i*1000+500);
+            let t3 = setTimeout(function() {
+                activarListeners();
+                cambiarContadorRonda();
+            }, i*1000+500);
             temporizadoresEnMarcha.push(t3);
             setTimeout(function(){eliminarElemento(temporizadoresEnMarcha, t3)}, i*1000+500);
         }
     }
 }
+*/
 
 function prenderBoton($boton) {
-    $boton.classList.remove("apagado");
-    $boton.classList.add("prendido");
+    $boton.style.opacity = 1;
 }
 
 function apagarBoton($boton) {
-    $boton.classList.remove("prendido");
-    $boton.classList.add("apagado");
+    $boton.style.opacity = 0.5;
+}
+
+function parpadearBoton($boton) {
+    prenderBoton($boton);
+    setTimeout(apagarBoton, 500, $boton);
 }
 
 function evaluarEventoPrenderBoton(event) {
@@ -120,36 +136,22 @@ function desactivarListeners() {
     })
 }
 
-function evaluarColorUsuario(event) {
-    const colorUsuario = event.target.id;
-    if(colorUsuario === secuenciaSimon[cantMovimientosJugador]) {
-        cantMovimientosJugador++;
-        evaluarEstadoJuego();
-    } else {
-        console.log("perdiste");
-        desactivarListeners();
-        reiniciarSimon();
-    }
+function cambiarContadorRonda(placeholder=undefined) {
+    const $contador = document.querySelector("#contador-ronda");
+    $contador.textContent = placeholder;
 }
 
-function evaluarEstadoJuego() {
-    if(secuenciaSimon.length === cantMovimientosJugador) {
-        desactivarListeners();
-        console.log("bien!");
-        let t4 = setTimeout(function() {
-            cantMovimientosJugador = 0;
-            agregarColorSimon();
-            mostrarSecuenciaSimon();
-        }, 1000);
-        temporizadoresEnMarcha.push(t4);
-        setTimeout(function(){eliminarElemento(temporizadoresEnMarcha, t4)}, 1000);
-    }
+function cambiarMensajeEstado(mensaje) {
+    document.querySelector("#msj-estado").textContent = mensaje;
 }
 
-function ocultarElemento($elemento) {
-    $elemento.classList.add("oculto");
+//FUNCIONES DE ARRAY
+function obtenerElementoAleatorio(array) {
+    const indiceAleatorio = Math.floor(Math.random() * array.length);
+    return array[indiceAleatorio];
 }
 
-function desocultarElemento($elemento) {
-    $elemento.classList.remove("oculto");
+function eliminarElemento(array, elemento) {
+    const indice = array.indexOf(elemento);
+    array.splice(indice, 1);
 }

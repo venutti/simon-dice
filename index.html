@@ -5,19 +5,35 @@
   <title>Simón Dice!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/main.css">
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
-
 <body>
-  <div id="tablero-simon">
-    <div class="color-simon apagado" id="rojo"></div>
-    <div class="color-simon apagado" id="amarillo"></div>
-    <div class="color-simon apagado" id="azul"></div>
-    <div class="color-simon apagado" id="verde"></div>
-  <div>
-  <div id="contenedor-botones">
-    <button id="boton-comenzar" class="boton">Comenzar</button>
-    <button id="boton-reiniciar" class="boton oculto">Reiniciar</button>
+
+<main class="container-fluid vh-100 bg-dark d-flex flex-column justify-content-center">
+  <div id="tablero-simon" class="container h-75 p-4 d-flex flex-column bg-dark rounded-4">
+    <div class="row flex-grow-1">
+      <div class="color-simon col-12 col-sm-6 rounded-4 border border-dark" id="rojo"></div>
+      <div class="color-simon col-12 col-sm-6 rounded-4 border border-dark" id="amarillo"></div>
+    </div>
+    <div class="row flex-grow-1">
+      <div class="color-simon col-12 col-sm-6 rounded-4 border border-dark" id="azul"></div>
+      <div class="color-simon col-12 col-sm-6 rounded-4 border border-dark" id="verde"></div>
+    </div>
+      
   </div>
-  <script src="js/main.js"></script>
+  <div id="barra-estado" class="container">
+    <div class="row">
+      <button id="boton-comenzar" class="btn btn-secondary col-6 col-sm-2">Jugar</button>
+      <div class="col-6 col-sm-2 d-flex align-items-center justify-content-center">
+        <p class="m-0 text-light">Ronda # <em id="contador-ronda"></em></p>
+      </div>
+      <div id="msj-estado" class="col-12 col-sm-8 alert alert-dark m-0"></div>
+    </div>
+  </div>
+
+</main>
+
+<script src="js/main.js"></script>
 </body>
 </html>
